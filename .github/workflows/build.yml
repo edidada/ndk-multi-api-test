@@ -23,10 +23,12 @@ jobs:
       - name: Diagnose binder headers
         run: |
           SYSROOT="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-          echo "--- grep AServiceManager in sysroot android headers ---"
-          grep -rl "AServiceManager_getService" "${SYSROOT}/usr/include/android/" 2>/dev/null
-          echo "--- grep AServiceManager in sysroot (all) ---"
-          grep -rl "AServiceManager_getService" "${SYSROOT}/usr/include/" 2>/dev/null | head
+          echo "--- grep ServiceManager (any case) ---"
+          grep -rli "ServiceManager" "${SYSROOT}/usr/include/" 2>/dev/null | head
+          echo "--- grep getService (any case) ---"
+          grep -rli "getService" "${SYSROOT}/usr/include/" 2>/dev/null | head
+          echo "--- list libbinder_ndk ---"
+          find "${ANDROID_NDK_HOME}" -name 'libbinder_ndk*' 2>/dev/null
 
       - name: Configure
         run: |
