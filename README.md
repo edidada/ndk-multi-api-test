@@ -8,12 +8,21 @@
 ```text
 ndk-multi-api-test/
 ├── CMakeLists.txt
-└── main.cpp
+├── include/
+│   └── multi_api_test.h        # 公共头：Bionic 检测、LOGI 宏、各 API 头文件、测试函数声明
+├── src/
+│   ├── bionic_test.cpp         # Bionic 检测（__BIONIC__、pthread、clock_gettime）
+│   ├── aaudio_test.cpp         # AAudio 创建/打开流
+│   ├── hardware_buffer_test.cpp# AHardwareBuffer 分配/锁定/写入
+│   ├── native_window_test.cpp  # ANativeWindow 符号链接验证
+│   └── binder_test.cpp         # libbinder_ndk（AIBinder）符号链接验证
+├── main.cpp                    # 入口：依次调用各模块测试并汇总
+└── .github/workflows/build.yml # CI：下载 NDK、configure、build、上传产物
 ```
 
 #### 1. `CMakeLists.txt`
 
-关键点：链接 `aaudio`、`android`（HardwareBuffer 和 NativeWindow 所需）、`binder_ndk`，**不链接 `pthread` 和 `rt`**（验证 Bionic 整合）。
+关键点：各功能模块编译为静态库 `multi_api_test`，`main.cpp` 仅作入口；链接 `aaudio`、`android`（HardwareBuffer 和 NativeWindow 所需）、`binder_ndk`，**不链接 `pthread` 和 `rt`**（验证 Bionic 整合）。
 
 ```cmake
 cmake_minimum_required(VERSION 3.18)
