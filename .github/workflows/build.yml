@@ -20,6 +20,13 @@ jobs:
           unzip -q ndk.zip
           echo "ANDROID_NDK_HOME=${PWD}/android-ndk-${NDK_VERSION}" >> "$GITHUB_ENV"
 
+      - name: Diagnose binder headers
+        run: |
+          echo "NDK_HOME=${ANDROID_NDK_HOME}"
+          ls -1 "${ANDROID_NDK_HOME}/sysroot/usr/include/android/" | grep -i binder || echo "NO binder headers found"
+          echo "--- all android headers (count) ---"
+          ls -1 "${ANDROID_NDK_HOME}/sysroot/usr/include/android/" | wc -l
+
       - name: Configure
         run: |
           mkdir build
