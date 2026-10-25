@@ -20,19 +20,8 @@ jobs:
           unzip -q ndk.zip
           echo "ANDROID_NDK_HOME=${PWD}/android-ndk-${NDK_VERSION}" >> "$GITHUB_ENV"
 
-      - name: Diagnose binder API
-        run: |
-          SYSROOT="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-          H=$(find "${SYSROOT}/usr/include" -name 'binder_ibinder.h' | head -1)
-          echo "HEADER=$H"
-          echo "--- AServiceManager decls in header ---"
-          grep -n "AServiceManager" "$H"
-          SO=$(find "${ANDROID_NDK_HOME}" -name 'libbinder_ndk.so' 2>/dev/null | head -1)
-          echo "SO=$SO"
-          echo "--- AServiceManager symbols in .so ---"
-          strings "$SO" | grep "AServiceManager"
-          echo "--- AIBinder_incStrong symbol present? ---"
-          strings "$SO" | grep -c "AIBinder_incStrong"
+      - name: Show NDK version
+        run: cat "${ANDROID_NDK_HOME}/source.properties"
 
       - name: Configure
         run: |
