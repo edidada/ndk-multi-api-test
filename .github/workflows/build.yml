@@ -23,9 +23,14 @@ jobs:
       - name: Diagnose binder headers
         run: |
           echo "NDK_HOME=${ANDROID_NDK_HOME}"
-          ls -1 "${ANDROID_NDK_HOME}/sysroot/usr/include/android/" | grep -i binder || echo "NO binder headers found"
-          echo "--- all android headers (count) ---"
-          ls -1 "${ANDROID_NDK_HOME}/sysroot/usr/include/android/" | wc -l
+          echo "--- top level ---"
+          ls -1 "${ANDROID_NDK_HOME}"
+          echo "--- find binder_ibinder.h ---"
+          find "${ANDROID_NDK_HOME}" -name 'binder_ibinder.h' 2>/dev/null
+          echo "--- find binder_manager.h ---"
+          find "${ANDROID_NDK_HOME}" -name 'binder_manager.h' 2>/dev/null
+          echo "--- find any binder*.h ---"
+          find "${ANDROID_NDK_HOME}" -name 'binder*.h' 2>/dev/null | head -50
 
       - name: Configure
         run: |
