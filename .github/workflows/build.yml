@@ -23,14 +23,16 @@ jobs:
       - name: Diagnose binder API
         run: |
           SYSROOT="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-          echo "--- all binder*.h in sysroot ---"
-          find "${SYSROOT}/usr/include" -iname 'binder*.h'
-          echo "--- grep AServiceManager in headers ---"
-          grep -rln "AServiceManager" "${SYSROOT}/usr/include" 2>/dev/null || echo "NONE in headers"
-          echo "--- symbols in libbinder_ndk.so ---"
+          H=$(find "${SYSROOT}/usr/include" -name 'binder_ibinder.h' | head -1)
+          echo "HEADER=$H"
+          echo "--- AServiceManager decls in header ---"
+          grep -n "AServiceManager" "$H"
           SO=$(find "${ANDROID_NDK_HOME}" -name 'libbinder_ndk.so' 2>/dev/null | head -1)
           echo "SO=$SO"
-          strings "$SO" | grep -iE 'getService|addService' | head
+          echo "--- AServiceManager symbols in .so ---"
+          strings "$SO" | grep "AServiceManager"
+          echo "--- AIBinder_incStrong symbol present? ---"
+          strings "$SO" | grep -c "AIBinder_incStrong"
 
       - name: Configure
         run: |
