@@ -20,13 +20,17 @@ jobs:
           unzip -q ndk.zip
           echo "ANDROID_NDK_HOME=${PWD}/android-ndk-${NDK_VERSION}" >> "$GITHUB_ENV"
 
-      - name: Diagnose binder headers
+      - name: Diagnose binder API
         run: |
-          echo "--- find binder_manager.h ---"
-          find "${ANDROID_NDK_HOME}" -name 'binder_manager.h' 2>/dev/null
-          echo "--- grep AServiceManager_getService in binder_manager.h ---"
-          F=$(find "${ANDROID_NDK_HOME}" -name 'binder_manager.h' 2>/dev/null | head -1)
-          [ -n "$F" ] && grep -n "AServiceManager_getService" "$F" || echo "binder_manager.h NOT FOUND"
+          SYSROOT="${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
+          echo "--- all binder*.h in sysroot ---"
+          find "${SYSROOT}/usr/include" -iname 'binder*.h'
+          echo "--- grep AServiceManager in headers ---"
+          grep -rln "AServiceManager" "${SYSROOT}/usr/include" 2>/dev/null || echo "NONE in headers"
+          echo "--- symbols in libbinder_ndk.so ---"
+          SO=$(find "${ANDROID_NDK_HOME}" -name 'libbinder_ndk.so' 2>/dev/null | head -1)
+          echo "SO=$SO"
+          strings "$SO" | grep -iE 'getService|addService' | head
 
       - name: Configure
         run: |
